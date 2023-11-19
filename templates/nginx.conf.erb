@@ -1,0 +1,15 @@
+events {
+  worker_connections  1024;
+}
+
+http {
+  server {
+    listen       <%= port %>;
+    server_name  localhost;
+
+    location / {
+      root   <%= document_root %>;
+      index  index.html;
+    }
+  }
+}

@@ -1,0 +1,37 @@
+# .github/workflows/puppet-ci.yml
+
+name: Puppet CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      SERVER_IP: ${{ secrets.SERVER_IP }}
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Puppet and SSH
+      run: |
+        sudo apt update
+        sudo apt install puppet -y
+
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
+
+    - name: Deploy Puppet manifests
+      run: |
+        scp -r /start-using-puppet/* root@$SERVER_IP:/etc/puppetlabs/code/environments/production
+
+    - name: Apply Puppet manifests remotely
+      run: |
+        ssh root@$SERVER_IP 'sudo puppet agent --test'

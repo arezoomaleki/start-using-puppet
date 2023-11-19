@@ -18,15 +18,16 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Puppet and SSH
+    - name: Set up SSH
       run: |
-        sudo apt update
-        sudo apt install puppet -y
-
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H $SERVER_IP >> ~/.ssh/known_hosts
+
+    - name: Check if Puppet is installed
+      run: |
+        ssh root@$SERVER_IP 'command -v puppet || echo "Puppet not installed"'
 
     - name: Deploy Puppet manifests
       run: |

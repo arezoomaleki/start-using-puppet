@@ -30,7 +30,7 @@ jobs:
 
     - name: Deploy Puppet manifests
       run: |
-        scp -r /start-using-puppet/* root@$SERVER_IP:/etc/puppetlabs/code/environments/production
+        scp -r /* root@$SERVER_IP:/etc/puppetlabs/code/environments/production
 
     - name: Apply Puppet manifests remotely
       run: |
